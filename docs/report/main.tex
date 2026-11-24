@@ -1,0 +1,2819 @@
+
+\documentclass[11pt,a4paper]{article}
+
+% =========================================================
+% PACKAGES
+% =========================================================
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{lmodern,microtype,amsmath}
+
+\usepackage[
+    a4paper,
+    left=24mm,
+    right=24mm,
+    top=24mm,
+    bottom=24mm,
+    headheight=14pt
+]{geometry}
+
+\usepackage[table]{xcolor}
+\usepackage{pagecolor}
+\usepackage{graphicx,float,caption,booktabs,tabularx,array,longtable}
+\usepackage{fancyhdr,lastpage,titlesec,enumitem,listings,hyperref}
+\usepackage{etoolbox}
+\usepackage{needspace}
+
+% =========================================================
+% DESIGN AND COLOURS
+% =========================================================
+
+\definecolor{paperpink}{HTML}{FFF9FB}
+\definecolor{ink}{HTML}{222222}
+\definecolor{muted}{HTML}{555555}
+\definecolor{rulegray}{HTML}{D8D5D7}
+\definecolor{codebg}{HTML}{FAF8F9}
+
+\pagecolor{paperpink}
+\color{ink}
+
+\hypersetup{
+    colorlinks=true,
+    allcolors=ink,
+    pdftitle={White Wine Quality Prediction},
+    pdfauthor={Gabriela Rehakova}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{2em}
+
+\renewcommand{\arraystretch}{1.16}
+
+\setlist[itemize]{
+    topsep=3pt,
+    itemsep=2pt,
+    leftmargin=1.5em
+}
+
+\setlist[enumerate]{
+    topsep=3pt,
+    itemsep=2pt,
+    leftmargin=1.5em
+}
+
+% =========================================================
+% SECTION FORMATTING
+% =========================================================
+
+\titleformat{\section}
+    {\Large\bfseries\color{ink}}
+    {\thesection}{0.7em}{}
+    [\vspace{2pt}\color{rulegray}\titlerule]
+
+\titleformat{\subsection}
+    {\large\bfseries\color{ink}}
+    {\thesubsection}{0.65em}{}
+
+\titlespacing*{\section}{0pt}{17pt}{9pt}
+\titlespacing*{\subsection}{0pt}{11pt}{4pt}
+
+\pretocmd{\section}{\Needspace{6\baselineskip}}{}{}
+\pretocmd{\subsection}{\Needspace{4\baselineskip}}{}{}
+
+% =========================================================
+% HEADER AND FOOTER
+% =========================================================
+
+\pagestyle{fancy}
+\fancyhf{}
+
+\fancyhead[L]{\footnotesize White Wine Quality Prediction}
+\fancyhead[R]{\footnotesize SEPL Technical Report}
+
+\fancyfoot[L]{\footnotesize Gabriela Rehakova BSc}
+\fancyfoot[R]{\footnotesize\thepage}
+
+\renewcommand{\headrulewidth}{0.35pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% =========================================================
+% FIGURES AND CODE LISTINGS
+% =========================================================
+
+\captionsetup{
+    font=small,
+    labelfont=bf,
+    textfont=normalfont,
+    skip=5pt
+}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{rulegray},
+    framerule=.4pt,
+    breaklines=true,
+    showstringspaces=false,
+    columns=fullflexible,
+    aboveskip=6pt,
+    belowskip=6pt
+}
+
+\graphicspath{{../screenshots/}}
+
+% Required screenshot.
+% Missing files are displayed as placeholders.
+
+\newcommand{\shot}[3]{%
+    \begin{figure}[H]
+        \centering
+        \IfFileExists{../screenshots/#1}{%
+            \includegraphics[
+                width=.94\linewidth,
+                height=.55\textheight,
+                keepaspectratio
+            ]{../screenshots/#1}
+        }{%
+            \fbox{%
+                \parbox[c][25mm][c]{.86\linewidth}{%
+                    \centering\small
+                    Screenshot:
+                    \texttt{\detokenize{#1}}\\
+                    Upload this file to docs/screenshots/
+                }
+            }
+        }
+        \caption{#2}
+        \label{#3}
+    \end{figure}
+}
+
+% Optional screenshot.
+% Included only when the corresponding file exists.
+
+\newcommand{\optionalshot}[3]{%
+    \IfFileExists{../screenshots/#1}{%
+        \shot{#1}{#2}{#3}
+    }{}
+}
+
+\newcommand{\codepath}[1]{\texttt{\detokenize{#1}}}
+
+% =========================================================
+% DOCUMENT
+% =========================================================
+
+\begin{document}
+
+% =========================================================
+% TITLE PAGE
+% =========================================================
+
+\begin{titlepage}
+\thispagestyle{empty}
+
+\vspace*{8mm}
+
+{\small\bfseries FH TECHNIKUM WIEN}\par
+
+\vspace{3mm}
+
+{\small Master's in AI \& Data Science}\par
+
+\vspace{15mm}
+
+\rule{40mm}{1pt}\par
+
+\vspace{10mm}
+
+{\fontsize{31}{36}\selectfont\bfseries
+White Wine\\[3mm]
+Quality Prediction\par}
+
+\vspace{8mm}
+
+{\large A Containerized Machine Learning System\par}
+
+\vspace{4mm}
+
+{\normalsize
+Asynchronous Inference, Automated Testing,
+Continuous Integration and Application Monitoring\par}
+
+\vspace{16mm}
+
+\begin{tabularx}{\linewidth}{@{}XXX@{}}
+    \textbf{75.16\%} &
+    \textbf{23 / 23} &
+    \textbf{3}\\
+    \small Model accuracy &
+    \small Tests passed &
+    \small Docker services
+\end{tabularx}
+
+\vspace{8mm}
+
+\begin{tabularx}{\linewidth}{@{}XXX@{}}
+    \textbf{2 / 2} &
+    \textbf{100\%} &
+    \textbf{1m 40s}\\
+    \small CI jobs passed &
+    \small Test success rate &
+    \small Latest CI duration
+\end{tabularx}
+
+\vspace{12mm}
+
+\rule{\linewidth}{.5pt}\par
+
+\vspace{6mm}
+
+\renewcommand{\arraystretch}{1.4}
+
+\begin{tabularx}{\linewidth}{@{}p{35mm}X@{}}
+    \textbf{Author} & Gabriela Rehakova BSc\\
+    \textbf{Course} & Software Engineering Practices in ML\\
+    \textbf{Programme} & Master's in AI \& Data Science\\
+    \textbf{Academic year} & 2026/2027\\
+    \textbf{Date} & 24 November 2026\\
+    \textbf{Repository} &
+    \url{https://github.com/neskrotna/sepl-ml-system}
+\end{tabularx}
+
+\vfill
+
+{\small\color{muted}
+Technical project report
+\hfill FH Technikum Wien}\par
+
+\end{titlepage}
+
+\pagenumbering{arabic}
+
+% =========================================================
+% EXECUTIVE SUMMARY
+% =========================================================
+
+\section*{Executive Summary}
+\addcontentsline{toc}{section}{Executive Summary}
+
+This project documents the development of a containerized
+machine learning system for binary white wine quality
+prediction.
+
+A Random Forest classifier was trained using physicochemical
+features from the UCI White Wine Quality dataset. After
+removing 937 duplicate records, 3,961 observations remained.
+The trained model achieved a test accuracy of
+\textbf{75.16\%}.
+
+The prediction system combines a FastAPI REST interface,
+Pydantic input validation, Redis-based asynchronous task
+processing and a Python background worker.
+
+Docker Compose orchestrates the API, Redis and worker
+services. The infrastructure includes environment-based
+configuration, read-only model bind mounts, persistent
+Redis storage, service networking and Redis health checks.
+
+Application logging records startup events, Redis
+connectivity, prediction requests, task processing,
+prediction results and inference execution time.
+
+The system passed all \textbf{23 automated tests} locally,
+including model unit tests, API tests and end-to-end
+integration tests. Ruff reported no remaining lint issues.
+
+Continuous integration was implemented using GitHub Actions.
+An initial account-level billing restriction was resolved
+by GitHub Support. Subsequent workflow executions completed
+successfully on GitHub-hosted runners.
+
+The latest verified workflow was automatically triggered
+by a push to the main branch. Both CI jobs passed, with a
+total execution duration of \textbf{1 minute and 40 seconds}.
+
+The implementation demonstrates a reproducible ML
+engineering workflow from model development to
+containerized inference, automated testing and continuous
+integration.
+
+The HPC simulation and final performance reflection remain
+outstanding at the current project stage.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{@{}lXlX@{}}
+\toprule
+\textbf{Model} & Random Forest &
+\textbf{API} & FastAPI\\
+
+\textbf{Dataset} & UCI White Wine &
+\textbf{Queue} & Redis\\
+
+\textbf{Infrastructure} & Docker Compose &
+\textbf{Testing} & pytest, Ruff\\
+
+\textbf{CI} & GitHub Actions &
+\textbf{Logging} & Python logging\\
+
+\textbf{Accuracy} & 75.16\% &
+\textbf{Tests} & 23/23 passed\\
+\bottomrule
+\end{tabularx}
+\caption{Project summary.}
+\end{table}
+
+\clearpage
+\tableofcontents
+\clearpage
+
+% =========================================================
+% 1. INTRODUCTION
+% =========================================================
+
+\section{Introduction}
+
+The objective of this individual assessment was to engineer
+a functioning machine learning inference application rather
+than deliver a standalone predictive model.
+
+The project combines machine learning development with
+software engineering practices covering application
+architecture, API design, asynchronous processing,
+containerization, testing, continuous integration and
+application monitoring.
+
+The selected use case is binary white wine quality
+prediction based on eleven numerical physicochemical
+measurements.
+
+The system accepts prediction requests through a REST API,
+validates the supplied features, queues prediction jobs
+and performs inference using a background worker.
+
+The implementation separates model training from runtime
+inference. A trained and serialized model artifact is
+reused by the application without requiring retraining
+for each prediction.
+
+\subsection{Project Objectives}
+
+The main project objectives are:
+
+\begin{itemize}
+    \item Develop and evaluate a machine learning model.
+    \item Persist the trained model for reusable inference.
+    \item Implement a validated REST API.
+    \item Separate request handling from inference.
+    \item Implement Redis-based asynchronous job processing.
+    \item Containerize the application services.
+    \item Externalize environment configuration.
+    \item Manage the model through read-only bind mounts.
+    \item Implement automated tests and static code analysis.
+    \item Configure continuous integration.
+    \item Implement application logging and health monitoring.
+    \item Document implementation and verification results.
+\end{itemize}
+
+\subsection{Technology Stack}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Area} & \textbf{Technologies}\\
+\midrule
+
+ML development &
+Python, pandas, NumPy, scikit-learn\\
+
+Model persistence &
+Joblib\\
+
+API and validation &
+FastAPI, Pydantic, Uvicorn\\
+
+Queue and worker &
+Redis, Python\\
+
+Infrastructure &
+Docker, Docker Compose\\
+
+Configuration &
+Environment variables, .env files\\
+
+Testing &
+pytest, HTTPX, FastAPI TestClient\\
+
+Static analysis &
+Ruff\\
+
+Version control &
+Git, GitHub\\
+
+Continuous integration &
+GitHub Actions\\
+
+Logging and monitoring &
+Python logging, Docker logs, health checks\\
+
+Documentation &
+LaTeX, Markdown, Overleaf\\
+
+\bottomrule
+\end{tabularx}
+\caption{Project technology stack.}
+\end{table}
+
+% =========================================================
+% 2. DATASET AND PREPROCESSING
+% =========================================================
+
+\section{Dataset and Preprocessing}
+
+\subsection{Dataset Description}
+
+The project uses the UCI White Wine Quality dataset
+\cite{wine,uci}.
+
+The original dataset contains 4,898 observations,
+eleven numerical physicochemical attributes and an
+original wine quality score.
+
+The dataset is stored in:
+
+\begin{lstlisting}
+data/winequality-white.csv
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Feature} & \textbf{Description}\\
+\midrule
+Fixed acidity & Non-volatile acidity\\
+Volatile acidity & Volatile acid concentration\\
+Citric acid & Citric acid concentration\\
+Residual sugar & Remaining sugar after fermentation\\
+Chlorides & Salt concentration\\
+Free sulfur dioxide & Free sulfur dioxide concentration\\
+Total sulfur dioxide & Total sulfur dioxide concentration\\
+Density & Wine density\\
+pH & Acidity level\\
+Sulphates & Sulphate concentration\\
+Alcohol & Alcohol content\\
+\bottomrule
+\end{tabularx}
+\caption{Input features used for wine quality prediction.}
+\end{table}
+
+\subsection{Exploratory Data Analysis}
+
+The dataset was explored before model training to
+understand its structure, feature distributions and
+data quality.
+
+\shot{01_dataset_exploration.png}
+{Initial exploration of the white wine dataset.}
+{fig:data1}
+
+\shot{02_dataset_exploration.png}
+{Additional exploratory analysis of the dataset.}
+{fig:data2}
+
+\subsection{Data Cleaning}
+
+Duplicate removal reduced the dataset from 4,898 to
+3,961 observations.
+
+A total of 937 duplicate records were removed before
+the training and test datasets were created.
+
+Removing duplicates reduces the risk of identical
+observations appearing in both subsets and influencing
+the evaluation results.
+
+\subsection{Binary Target Definition}
+
+The original quality score was converted into a binary
+classification target.
+
+\[
+y =
+\begin{cases}
+1, & \text{if quality} \geq 6\\
+0, & \text{if quality} < 6
+\end{cases}
+\]
+
+The resulting classes are:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{@{}clX@{}}
+\toprule
+\textbf{Class ID} & \textbf{Label} & \textbf{Definition}\\
+\midrule
+0 & \texttt{lower\_quality} & Quality score below 6\\
+1 & \texttt{good\_quality} & Quality score of at least 6\\
+\bottomrule
+\end{tabularx}
+\caption{Binary classification target.}
+\end{table}
+
+\subsection{Training and Test Split}
+
+The cleaned dataset was divided into training and
+test subsets.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{Stage} & \textbf{Observations}\\
+\midrule
+Original dataset & 4,898\\
+Removed duplicates & 937\\
+Cleaned dataset & 3,961\\
+Training dataset & 3,168\\
+Test dataset & 793\\
+\bottomrule
+\end{tabular}
+\caption{Data preparation summary.}
+\end{table}
+
+The training dataset was used to fit the classifier,
+while the test dataset was reserved for evaluating
+predictive performance.
+
+% =========================================================
+% 3. MODEL TRAINING AND EVALUATION
+% =========================================================
+
+\section{Model Training and Evaluation}
+
+\subsection{Random Forest Classifier}
+
+A Random Forest classifier was selected because of its
+suitability for numerical tabular data and its ability
+to represent nonlinear relationships between features.
+
+Random Forest combines multiple decision trees to
+produce a final classification and supports probability
+estimates for individual predictions.
+
+The implementation uses scikit-learn \cite{sklearn}.
+
+The training script is located at:
+
+\begin{lstlisting}
+ml_model/train.py
+\end{lstlisting}
+
+The script performs dataset loading, preprocessing,
+target conversion, training, evaluation and model
+serialization.
+
+The model was trained using:
+
+\begin{lstlisting}
+python ml_model/train.py
+\end{lstlisting}
+
+\shot{03_model_training.png}
+{Training the Random Forest classifier.}
+{fig:train}
+
+\subsection{Model Performance}
+
+The trained classifier achieved a test accuracy of
+\textbf{75.16\%}.
+
+Accuracy is defined as:
+
+\[
+Accuracy =
+\frac{TP+TN}{TP+TN+FP+FN}
+\]
+
+The confusion matrix, using class order 0 followed
+by class 1, was:
+
+\[
+\begin{bmatrix}
+162 & 108\\
+89 & 434
+\end{bmatrix}
+\]
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lrr@{}}
+\toprule
+& \textbf{Predicted 0} & \textbf{Predicted 1}\\
+\midrule
+Actual 0 & 162 & 108\\
+Actual 1 & 89 & 434\\
+\bottomrule
+\end{tabular}
+\caption{Random Forest confusion matrix.}
+\end{table}
+
+The macro-averaged F1-score was approximately 0.72.
+
+Precision, recall and F1-score complement accuracy by
+providing information about classification performance
+for individual classes.
+
+\[
+Precision = \frac{TP}{TP+FP}
+\]
+
+\[
+Recall = \frac{TP}{TP+FN}
+\]
+
+\[
+F_1 =
+2 \cdot
+\frac{Precision \cdot Recall}
+{Precision+Recall}
+\]
+
+\shot{04_model_evaluation.png}
+{Model evaluation results.}
+{fig:evaluation}
+
+\subsection{Model Serialization}
+
+The trained model was serialized using joblib and saved
+as:
+
+\begin{lstlisting}
+ml_model/model.pkl
+\end{lstlisting}
+
+The serialized artifact has a size of approximately
+7.47 MB.
+
+Persisting the trained model separates model training
+from application inference and avoids retraining during
+application startup or prediction processing.
+
+\shot{05_saved_model.png}
+{Persisted Random Forest model artifact.}
+{fig:artifact}
+
+\subsection{Local Inference}
+
+The model module is responsible for loading the trained
+artifact, validating input features, preparing numerical
+input and performing inference.
+
+A local sample produced the following prediction values:
+
+\begin{lstlisting}
+{
+    "prediction": "good_quality",
+    "class_id": 1,
+    "confidence": 0.75
+}
+\end{lstlisting}
+
+The confidence value represents the model's estimated
+probability for the predicted class. It should not be
+interpreted as a guarantee of prediction correctness.
+
+\shot{06_local_prediction.png}
+{Successful local model inference.}
+{fig:local}
+
+% =========================================================
+% 4. SYSTEM ARCHITECTURE
+% =========================================================
+
+\section{System Architecture}
+
+\subsection{Architectural Overview}
+
+The application consists of three cooperating services:
+
+\begin{itemize}
+    \item FastAPI REST API.
+    \item Redis job queue and result store.
+    \item Python background inference worker.
+\end{itemize}
+
+The API is responsible for receiving and validating
+requests. Redis stores pending prediction jobs and task
+results. The worker consumes queued jobs and performs
+machine learning inference.
+
+\begin{center}
+\fbox{
+\begin{minipage}{.86\linewidth}
+\centering
+\vspace{5pt}
+
+\textbf{Client / Swagger UI}\\[4pt]
+$\downarrow$\\[4pt]
+
+\textbf{FastAPI REST API}\\
+\small Request validation and task creation\\[4pt]
+$\downarrow$\\[4pt]
+
+\textbf{Redis Job Queue}\\
+\small Pending prediction tasks\\[4pt]
+$\downarrow$\\[4pt]
+
+\textbf{Background Worker}\\
+\small Input preprocessing and model inference\\[4pt]
+$\downarrow$\\[4pt]
+
+\textbf{Random Forest Model}\\[4pt]
+$\downarrow$\\[4pt]
+
+\textbf{Redis Result Store}\\[4pt]
+$\downarrow$\\[4pt]
+
+\textbf{FastAPI Result Endpoint}\\[4pt]
+$\downarrow$\\[4pt]
+
+\textbf{Client}
+
+\vspace{5pt}
+\end{minipage}
+}
+\end{center}
+
+\subsection{Asynchronous Prediction Workflow}
+
+The prediction pipeline follows these steps:
+
+\begin{enumerate}
+    \item The client submits a prediction request.
+    \item FastAPI validates the request using Pydantic.
+    \item The API generates a unique task identifier.
+    \item The prediction job is added to Redis.
+    \item The API returns HTTP 202 Accepted.
+    \item The worker retrieves the queued job.
+    \item The worker preprocesses the input features.
+    \item The trained model performs inference.
+    \item The prediction result is stored in Redis.
+    \item The client retrieves the result using the task ID.
+\end{enumerate}
+
+The architecture decouples HTTP request handling from
+machine learning inference.
+
+For the selected lightweight classifier, the primary
+benefit is separation of responsibilities and
+asynchronous task management rather than a demonstrated
+improvement in inference speed.
+
+% =========================================================
+% 5. REST API IMPLEMENTATION
+% =========================================================
+
+\section{REST API Implementation}
+
+\subsection{FastAPI and Pydantic}
+
+The REST API was implemented using FastAPI
+\cite{fastapi}.
+
+Pydantic schemas define the expected prediction features
+and support automatic request validation.
+
+The relevant implementation files are:
+
+\begin{lstlisting}
+api/main.py
+api/schemas.py
+\end{lstlisting}
+
+Interactive API documentation is available through
+Swagger UI:
+
+\begin{center}
+\url{http://localhost:8000/docs}
+\end{center}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Method} & \textbf{Endpoint} & \textbf{Purpose}\\
+\midrule
+GET & \texttt{/} & Application information\\
+GET & \texttt{/health} & Redis connectivity check\\
+POST & \texttt{/predict} & Submit a prediction job\\
+GET & \texttt{/result/\{task\_id\}} & Retrieve task status or result\\
+\bottomrule
+\end{tabularx}
+\caption{Implemented REST API endpoints.}
+\end{table}
+
+\shot{07_swagger_ui.png}
+{Swagger UI and automatically generated API documentation.}
+{fig:swagger}
+
+\subsection{Prediction Request}
+
+The client submits eleven physicochemical features
+through the prediction endpoint.
+
+An example request is:
+
+\begin{lstlisting}
+{
+    "fixed_acidity": 7.0,
+    "volatile_acidity": 0.27,
+    "citric_acid": 0.36,
+    "residual_sugar": 20.7,
+    "chlorides": 0.045,
+    "free_sulfur_dioxide": 45.0,
+    "total_sulfur_dioxide": 170.0,
+    "density": 1.001,
+    "pH": 3.0,
+    "sulphates": 0.45,
+    "alcohol": 8.8
+}
+\end{lstlisting}
+
+A successfully accepted request returns HTTP 202 and
+a generated task identifier.
+
+\shot{08_predict_request.png}
+{Prediction request submitted through the REST API.}
+{fig:predict}
+
+\shot{09_queued_result.png}
+{Queued prediction status returned by the API.}
+{fig:queued}
+
+\subsection{Prediction Result Retrieval}
+
+The result endpoint retrieves the current task state
+using its unique identifier.
+
+While processing is pending, the task remains queued.
+After inference finishes, the response contains the
+completed prediction information.
+
+\shot{14_new_prediction_request.png}
+{Additional prediction request submitted through Swagger UI.}
+{fig:second}
+
+\shot{15_completed_api_prediction.png}
+{Completed prediction retrieved through the result endpoint.}
+{fig:completed}
+
+\subsection{Input Validation and Error Handling}
+
+Pydantic validates request structure and expected
+feature types.
+
+Additional validation in the model layer checks missing
+features, unexpected features, nonnumeric values,
+NaN values and infinite values.
+
+The API implements appropriate HTTP responses for
+successful requests and error conditions.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{HTTP Status} & \textbf{Meaning}\\
+\midrule
+200 OK & Successful request\\
+202 Accepted & Prediction job accepted\\
+404 Not Found & Unknown task identifier\\
+422 Unprocessable Entity & Invalid prediction input\\
+503 Service Unavailable & Redis connection unavailable\\
+\bottomrule
+\end{tabularx}
+\caption{HTTP response codes.}
+\end{table}
+
+\shot{16_api_validation_error.png}
+{Validation error for invalid prediction input.}
+{fig:validation}
+
+\shot{17_unknown_task_error.png}
+{Unknown task identifier returning HTTP 404.}
+{fig:unknown}
+
+% =========================================================
+% 6. REDIS AND WORKER PROCESSING
+% =========================================================
+
+\section{Redis and Worker Processing}
+
+\subsection{Redis Job Queue}
+
+Redis is used as a lightweight job queue and result
+store \cite{redis}.
+
+Prediction jobs are placed into the following Redis list:
+
+\begin{lstlisting}
+wine_prediction_jobs
+\end{lstlisting}
+
+Task results are stored using keys with the following
+structure:
+
+\begin{lstlisting}
+result:<task_id>
+\end{lstlisting}
+
+The use of unique task identifiers supports independent
+tracking of submitted prediction jobs.
+
+\shot{10_redis_queue.png}
+{Prediction job stored in the Redis queue.}
+{fig:redisqueue}
+
+\subsection{Background Worker}
+
+The background worker is implemented in:
+
+\begin{lstlisting}
+worker/worker.py
+\end{lstlisting}
+
+The worker loads the trained Random Forest model,
+establishes a Redis connection and waits for prediction
+jobs.
+
+After receiving a job, the worker preprocesses the
+features, performs inference and stores the result
+in Redis.
+
+\shot{11_worker_processing.png}
+{Background worker processing a queued prediction.}
+{fig:worker}
+
+\subsection{Queue Consumption and Result Storage}
+
+Successful job consumption was verified by inspecting
+the Redis queue after worker processing.
+
+\shot{12_redis_empty_queue.png}
+{Redis queue after successful job consumption.}
+{fig:empty}
+
+The completed prediction was subsequently verified
+in the Redis result store.
+
+\shot{13_redis_completed_result.png}
+{Completed prediction result stored in Redis.}
+{fig:stored}
+
+% =========================================================
+% 7. DOCKER CONTAINERIZATION
+% =========================================================
+
+\section{Docker Containerization}
+
+\subsection{Containerized Infrastructure}
+
+Docker was used to package the application and its
+runtime dependencies into reproducible containers
+\cite{docker}.
+
+Docker Compose coordinates the API, Redis and worker
+services.
+
+The infrastructure is defined in:
+
+\begin{lstlisting}
+Dockerfile
+compose.yaml
+.dockerignore
+.env.example
+\end{lstlisting}
+
+The Dockerfile packages the Python application and
+required dependencies.
+
+The Compose configuration defines service commands,
+environment variables, networking, volumes, restart
+policies and startup dependencies.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Service} & \textbf{Responsibility}\\
+\midrule
+API & HTTP request handling and validation\\
+Redis & Job queue and result storage\\
+Worker & Background machine learning inference\\
+\bottomrule
+\end{tabularx}
+\caption{Docker Compose services.}
+\end{table}
+
+\subsection{Initial Container Deployment}
+
+The initial application deployment was performed using:
+
+\begin{lstlisting}
+docker compose up -d --build
+docker compose ps
+docker compose logs worker
+\end{lstlisting}
+
+\shot{18_docker_compose_build.png}
+{Initial Docker Compose image build.}
+{fig:build}
+
+\shot{19_docker_compose_services.png}
+{Initial running Docker Compose services.}
+{fig:services}
+
+\shot{20_docker_worker_logs.png}
+{Background worker container logs.}
+{fig:logs}
+
+\subsection{Initial End-to-End Verification}
+
+The containerized application was verified by submitting
+prediction requests through the REST API.
+
+Redis accepted queued jobs, the background worker
+performed inference and the result endpoint returned
+completed predictions.
+
+\shot{21_docker_prediction_request.png}
+{Prediction request submitted to the Dockerized API.}
+{fig:drequest}
+
+\shot{22_docker_completed_prediction.png}
+{Completed prediction returned by the Dockerized API.}
+{fig:dcompleted}
+
+\shot{23_docker_worker_inference.png}
+{Successful worker inference inside Docker.}
+{fig:dinference}
+
+\shot{24_docker_redis_verification.png}
+{Redis verification inside the Docker environment.}
+{fig:dredis}
+
+\subsection{Environment-Based Configuration}
+
+The infrastructure was subsequently extended to
+externalize runtime configuration.
+
+The following environment variables define the Redis
+connection settings:
+
+\begin{lstlisting}
+REDIS_HOST=redis
+REDIS_PORT=6379
+\end{lstlisting}
+
+A version-controlled configuration template was created:
+
+\begin{lstlisting}
+.env.example
+\end{lstlisting}
+
+The local runtime configuration is stored in:
+
+\begin{lstlisting}
+.env
+\end{lstlisting}
+
+The actual environment file is excluded from Git,
+while the example file is included in the repository.
+
+On Windows, the configuration is created using:
+
+\begin{lstlisting}
+Copy-Item .env.example .env
+\end{lstlisting}
+
+On Linux and macOS:
+
+\begin{lstlisting}
+cp .env.example .env
+\end{lstlisting}
+
+Docker Compose passes the configuration to the API
+and worker containers.
+
+Externalizing configuration separates environment-specific
+settings from application source code and supports
+reproducible deployments.
+
+\subsection{Read-Only Model Bind Mounts}
+
+The trained Random Forest artifact was configured as a
+read-only bind mount in both the API and worker
+containers.
+
+\begin{lstlisting}
+volumes:
+  - ./ml_model/model.pkl:/app/ml_model/model.pkl:ro
+\end{lstlisting}
+
+The host model artifact is mounted at:
+
+\begin{lstlisting}
+/app/ml_model/model.pkl
+\end{lstlisting}
+
+The read-only option prevents the containers from
+modifying the mounted model file.
+
+This configuration supports independent runtime
+management of the trained artifact. Replacing the
+host model file does not require rebuilding the
+application image, although the worker must reload
+the model before using the replacement.
+
+The Dockerfile also packages the model directory.
+The runtime bind mount overrides the corresponding
+model file inside the container.
+
+\subsection{Service Networking}
+
+Docker Compose creates a shared default network for
+the application services.
+
+The API and worker communicate with Redis using its
+service hostname:
+
+\begin{lstlisting}
+redis:6379
+\end{lstlisting}
+
+The Redis service does not publish its port to the
+host machine.
+
+The API port is published through the loopback
+interface:
+
+\begin{lstlisting}
+127.0.0.1:8000:8000
+\end{lstlisting}
+
+This configuration makes the API accessible locally
+while avoiding direct exposure through all host
+network interfaces.
+
+\subsection{Redis Data Persistence}
+
+Redis uses a named Docker volume for persistent
+storage.
+
+\begin{lstlisting}
+volumes:
+  - redis_data:/data
+\end{lstlisting}
+
+Append-only persistence is enabled:
+
+\begin{lstlisting}
+command: ["redis-server", "--appendonly", "yes"]
+\end{lstlisting}
+
+The named volume preserves Redis data across normal
+container shutdown and recreation.
+
+This configuration does not provide a complete backup
+or disaster recovery mechanism.
+
+\subsection{Redis Health Check}
+
+A Redis health check was configured using the
+Redis CLI.
+
+\begin{lstlisting}
+healthcheck:
+  test: ["CMD", "redis-cli", "ping"]
+  interval: 5s
+  timeout: 3s
+  retries: 10
+\end{lstlisting}
+
+The API and worker depend on Redis becoming healthy
+before starting.
+
+\begin{lstlisting}
+depends_on:
+  redis:
+    condition: service_healthy
+\end{lstlisting}
+
+This reduces startup failures caused by attempting to
+connect to Redis before it is ready.
+
+\subsection{Restart Policies}
+
+The application services use the following restart
+policy:
+
+\begin{lstlisting}
+restart: unless-stopped
+\end{lstlisting}
+
+This supports automatic container restarts following
+unexpected termination, unless the container was
+explicitly stopped.
+
+\subsection{Updated Compose Configuration Verification}
+
+The resolved Compose configuration was inspected using:
+
+\begin{lstlisting}
+docker compose config
+\end{lstlisting}
+
+The command verified the service definitions,
+environment variables, model bind mounts, networking,
+Redis persistence and health-check configuration.
+
+\shot{37_docker_compose_configuration1.png}
+{Resolved Docker Compose configuration, part one.}
+{fig:composeconfig1}
+
+\shot{37_docker_compose_configuration2.png}
+{Resolved Docker Compose configuration, part two.}
+{fig:composeconfig2}
+
+\shot{37_docker_compose_configuration3.png}
+{Resolved Docker Compose configuration, part three.}
+{fig:composeconfig3}
+
+\subsection{Updated Container Deployment}
+
+The updated infrastructure was started and inspected
+using:
+
+\begin{lstlisting}
+docker compose up -d --build
+docker compose ps
+\end{lstlisting}
+
+All three services were running successfully.
+
+The Redis container was marked as healthy, and the API
+was accessible through its configured local port.
+
+\shot{38_updated_docker_services.png}
+{Running services after the infrastructure configuration update.}
+{fig:updatedservices}
+
+\subsection{Runtime Bind Mount Verification}
+
+The model bind mounts were inspected directly in the
+running API and worker containers.
+
+The following commands were executed in PowerShell:
+
+\begin{lstlisting}
+docker inspect (docker compose ps -q api) --format '{{json .Mounts}}'
+
+docker inspect (docker compose ps -q worker) --format '{{json .Mounts}}'
+\end{lstlisting}
+
+The inspection confirmed the following mount
+properties:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Property} & \textbf{Observed Value}\\
+\midrule
+Type & Bind mount\\
+Destination & \codepath{/app/ml_model/model.pkl}\\
+Mode & Read-only (ro)\\
+RW & False\\
+Services & API and worker\\
+\bottomrule
+\end{tabularx}
+\caption{Verified model bind mount properties.}
+\end{table}
+
+\shot{39_model_bind_mount_verification.png}
+{Read-only model bind mounts verified in both containers.}
+{fig:bindmount}
+
+\subsection{Runtime Environment Verification}
+
+The environment variables were inspected inside both
+application containers:
+
+\begin{lstlisting}
+docker compose exec api printenv REDIS_HOST REDIS_PORT
+
+docker compose exec worker printenv REDIS_HOST REDIS_PORT
+\end{lstlisting}
+
+Both containers returned:
+
+\begin{lstlisting}
+redis
+6379
+\end{lstlisting}
+
+This confirmed that the expected runtime configuration
+was available inside the running services.
+
+\shot{40_environment_variables_verification.png}
+{Redis environment variables verified in both containers.}
+{fig:environment}
+
+\subsection{Regression Verification of Prediction Processing}
+
+After introducing the new infrastructure configuration,
+the end-to-end prediction workflow was executed again.
+
+The API accepted a prediction request, the worker
+loaded the mounted model and performed inference,
+and the completed result was retrieved successfully.
+
+\shot{41_prediction_after_configuration_update.png}
+{Successful prediction after the Docker configuration update.}
+{fig:updatedprediction}
+
+\subsection{Containerization Verification Summary}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{@{}Xl@{}}
+\toprule
+\textbf{Verification Item} & \textbf{Result}\\
+\midrule
+Docker Compose configuration & Verified\\
+API container startup & Successful\\
+Worker container startup & Successful\\
+Redis container startup & Successful\\
+Redis health check & Healthy\\
+Model bind mounts & Verified\\
+Read-only model access & Verified\\
+Environment variables & Verified\\
+Service networking & Operational\\
+Redis named volume configuration & Verified\\
+End-to-end prediction & Successful\\
+Automated integration tests & Passed\\
+GitHub Actions integration job & Passed\\
+\bottomrule
+\end{tabularx}
+\caption{Containerization verification summary.}
+\end{table}
+
+% =========================================================
+% 8. AUTOMATED TESTING
+% =========================================================
+
+\section{Automated Testing}
+
+\subsection{Testing Strategy}
+
+The project uses pytest \cite{pytest} to verify
+machine learning functionality, API behaviour and
+integration between application services.
+
+The testing strategy consists of three levels:
+
+\begin{itemize}
+    \item Model unit tests.
+    \item API tests using mocked Redis interactions.
+    \item End-to-end integration tests.
+\end{itemize}
+
+The complete test suite contains 23 automated tests.
+
+\subsection{Model Unit Tests}
+
+Ten tests are implemented in:
+
+\begin{lstlisting}
+tests/test_model.py
+\end{lstlisting}
+
+The tests cover:
+
+\begin{itemize}
+    \item Successful model loading.
+    \item Valid input preprocessing.
+    \item Missing input features.
+    \item Unexpected input features.
+    \item Nonnumeric input values.
+    \item NaN input values.
+    \item Infinite input values.
+    \item Prediction response structure.
+    \item Prediction confidence.
+    \item Prediction for a known wine sample.
+\end{itemize}
+
+The tests were executed using:
+
+\begin{lstlisting}
+python -m pytest tests/test_model.py -v
+\end{lstlisting}
+
+\shot{25_pytest_unit_tests.png}
+{Ten successfully executed model unit tests.}
+{fig:unit}
+
+\subsection{API Tests}
+
+Eleven tests are implemented in:
+
+\begin{lstlisting}
+tests/test_api.py
+\end{lstlisting}
+
+The tests use FastAPI TestClient and mocked Redis
+operations.
+
+The tested scenarios include:
+
+\begin{itemize}
+    \item Root endpoint.
+    \item Successful health check.
+    \item Redis unavailability during health checks.
+    \item Valid prediction requests.
+    \item Missing prediction features.
+    \item Invalid prediction feature types.
+    \item Redis unavailability during prediction submission.
+    \item Queued prediction results.
+    \item Completed prediction results.
+    \item Unknown task identifiers.
+    \item Redis unavailability during result retrieval.
+\end{itemize}
+
+The tests were executed using:
+
+\begin{lstlisting}
+python -m pytest tests/test_api.py -v
+\end{lstlisting}
+
+\shot{26_pytest_api_tests.png}
+{Eleven successfully executed API tests.}
+{fig:apiunit}
+
+\subsection{Integration Tests}
+
+Two integration tests are implemented in:
+
+\begin{lstlisting}
+tests/test_integration.py
+\end{lstlisting}
+
+Unlike the isolated tests, integration tests communicate
+with the running Docker application.
+
+The first test verifies the complete prediction pipeline
+from request submission to result retrieval.
+
+The second test verifies HTTP 404 behaviour for an
+unknown task identifier.
+
+\begin{lstlisting}
+python -m pytest tests/test_integration.py -v
+\end{lstlisting}
+
+\shot{27_pytest_integration_tests.png}
+{Two successfully executed Docker integration tests.}
+{fig:integration}
+
+\subsection{Complete Test Suite}
+
+The complete test suite was executed using:
+
+\begin{lstlisting}
+python -m pytest tests/ -v
+\end{lstlisting}
+
+All 23 tests passed.
+
+\shot{28_pytest_full_suite.png}
+{Initial complete test suite with 23 passing tests.}
+{fig:full}
+
+\subsection{Isolated Test Execution}
+
+The unit and API tests were also executed independently
+of the Docker integration tests.
+
+\begin{lstlisting}
+python -m pytest tests/ -v -m "not integration"
+\end{lstlisting}
+
+The execution produced 21 passing tests and two
+deselected integration tests.
+
+\shot{29_pytest_without_integration.png}
+{Isolated unit and API test execution.}
+{fig:nointegration}
+
+\subsection{Local Environment Migration}
+
+During project development, the application was
+transferred to a new Windows development computer.
+
+The previously copied virtual environment contained
+references to the Python interpreter installed on
+the original computer.
+
+Consequently, local Python commands initially failed
+because the referenced interpreter was no longer
+available.
+
+The virtual environment was removed and recreated
+using the Python installation available on the new
+computer.
+
+\begin{lstlisting}
+Remove-Item -Recurse -Force .venv
+
+python -m venv .venv
+
+.\.venv\Scripts\Activate.ps1
+
+python -m pip install --upgrade pip
+
+python -m pip install -r requirements.txt
+\end{lstlisting}
+
+The recreated environment used Python 3.13.14.
+
+The Docker and GitHub Actions environments continued
+to use Python 3.12.
+
+This migration demonstrated the importance of
+recreating virtual environments from dependency
+definitions rather than transferring existing
+virtual environment directories between computers.
+
+\subsection{Model Loading Diagnostics}
+
+During the initial regression test execution on the
+new computer, the model-loading test appeared to
+stall.
+
+The affected test was isolated and executed with
+additional diagnostic output:
+
+\begin{lstlisting}
+python -m pytest tests/test_model.py::test_model_loads_successfully -v -s -o faulthandler_timeout=30
+\end{lstlisting}
+
+The isolated test subsequently passed in 8.60 seconds.
+
+The exact cause of the earlier delay was not
+established.
+
+No model retraining or application code changes were
+required to resolve the observed behaviour.
+
+\subsection{Regression Testing After Configuration Changes}
+
+Following the introduction of environment-based
+configuration and read-only model bind mounts,
+the complete test suite was executed again.
+
+\begin{lstlisting}
+python -m pytest tests/ -v -o faulthandler_timeout=30
+\end{lstlisting}
+
+All 23 automated tests passed successfully.
+
+The result confirmed that the updated infrastructure
+did not introduce regressions detectable by the
+existing test suite.
+
+\shot{42_tests_after_configuration_update.png}
+{All 23 tests passing after infrastructure changes and environment migration.}
+{fig:regression}
+
+\subsection{Final Test Results}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Category} &
+\textbf{Total} &
+\textbf{Passed} &
+\textbf{Success Rate}\\
+\midrule
+Model unit tests & 10 & 10 & 100\%\\
+API tests & 11 & 11 & 100\%\\
+Integration tests & 2 & 2 & 100\%\\
+\midrule
+\textbf{Total} & \textbf{23} & \textbf{23} & \textbf{100\%}\\
+\bottomrule
+\end{tabular}
+\caption{Final local automated test results.}
+\end{table}
+
+% =========================================================
+% 9. STATIC CODE ANALYSIS
+% =========================================================
+
+\section{Static Code Analysis}
+
+Ruff was used to perform static code analysis and
+identify Python code quality issues \cite{ruff}.
+
+The initial analysis identified seven import-order
+issues.
+
+The supported automatic corrections were applied using:
+
+\begin{lstlisting}
+python -m ruff check api/ ml_model/ worker/ tests/ --fix
+\end{lstlisting}
+
+A subsequent analysis was performed using:
+
+\begin{lstlisting}
+python -m ruff check api/ ml_model/ worker/ tests/
+\end{lstlisting}
+
+The final output was:
+
+\begin{lstlisting}
+All checks passed!
+\end{lstlisting}
+
+The complete test suite was rerun successfully
+following the lint corrections.
+
+\shot{30_ruff_linting.png}
+{Successful Ruff static code analysis.}
+{fig:ruff}
+
+Ruff was also executed successfully after the latest
+infrastructure configuration changes and local
+environment migration.
+
+% =========================================================
+% 10. VERSION CONTROL
+% =========================================================
+
+\section{Version Control and GitHub}
+
+\subsection{Repository Initialization}
+
+Git was used to track source code, infrastructure
+configuration, tests and documentation.
+
+The repository was initialized locally and the
+primary branch was named \texttt{main}.
+
+\begin{lstlisting}
+git init
+git branch -M main
+git add .
+git commit -m "Initial commit: ML system"
+git push -u origin main
+\end{lstlisting}
+
+The initial commit was:
+
+\begin{lstlisting}
+c6ae85a
+\end{lstlisting}
+
+\shot{31_git_initial_commit.png}
+{Initial Git commit and repository history.}
+{fig:git}
+
+\subsection{GitHub Repository}
+
+The project was published to the following public
+GitHub repository:
+
+\begin{center}
+\url{https://github.com/neskrotna/sepl-ml-system}
+\end{center}
+
+\shot{32_github_repository.png}
+{Published GitHub project repository.}
+{fig:repo}
+
+\subsection{Version Control Exclusions}
+
+The \codepath{.gitignore} file excludes local development
+artifacts, including virtual environments, Python
+cache files and the actual environment configuration.
+
+The configuration template remains version-controlled.
+
+The exclusions were verified using:
+
+\begin{lstlisting}
+git check-ignore .env
+git check-ignore .venv/
+\end{lstlisting}
+
+Both commands returned the corresponding ignored
+file or directory.
+
+This prevents machine-specific environment files
+from being included in repository commits.
+
+\subsection{Infrastructure Configuration Commit}
+
+The updated Docker configuration, environment template,
+GitHub Actions workflow, README and implementation
+screenshots were committed to GitHub.
+
+The commit message was:
+
+\begin{lstlisting}
+feat: add model bind mounts and environment configuration
+\end{lstlisting}
+
+The verified commit identifier was:
+
+\begin{lstlisting}
+a102b16
+\end{lstlisting}
+
+Pushing this commit to the main branch automatically
+triggered the updated continuous integration workflow.
+
+% =========================================================
+% 11. CONTINUOUS INTEGRATION
+% =========================================================
+
+\section{Continuous Integration}
+
+\subsection{GitHub Actions Workflow}
+
+Continuous integration was implemented using
+GitHub Actions \cite{actions}.
+
+The workflow is defined in:
+
+\begin{lstlisting}
+.github/workflows/ci.yml
+\end{lstlisting}
+
+The workflow is named:
+
+\begin{lstlisting}
+White Wine Quality CI
+\end{lstlisting}
+
+It is triggered by:
+
+\begin{itemize}
+    \item Pushes to the main branch.
+    \item Pull requests targeting the main branch.
+    \item Manual workflow execution.
+\end{itemize}
+
+The initial workflow commit was \texttt{fbe8b79}.
+
+\subsection{CI Job Structure}
+
+The workflow consists of two independent jobs.
+
+\subsubsection*{Job 1: Lint and Unit Tests}
+
+The first job performs the following steps:
+
+\begin{enumerate}
+    \item Check out the repository.
+    \item Set up Python 3.12.
+    \item Install project dependencies.
+    \item Execute Ruff static code analysis.
+    \item Execute the 21 non-integration tests.
+\end{enumerate}
+
+\subsubsection*{Job 2: Docker Integration Tests}
+
+The updated second job performs the following steps:
+
+\begin{enumerate}
+    \item Check out the repository.
+    \item Create the environment configuration.
+    \item Set up Python 3.12.
+    \item Install test dependencies.
+    \item Build and start Docker Compose services.
+    \item Wait for API readiness.
+    \item Execute the two integration tests.
+    \item Display Docker logs if a failure occurs.
+    \item Stop Docker Compose services.
+\end{enumerate}
+
+\subsection{CI Execution Architecture}
+
+\begin{center}
+\fbox{
+\begin{minipage}{.9\linewidth}
+\centering
+\vspace{5pt}
+
+\textbf{Push / Pull Request / Manual Trigger}\\[5pt]
+$\downarrow$\\[5pt]
+\textbf{GitHub Actions}\\[8pt]
+
+\begin{tabularx}{\linewidth}{@{}XX@{}}
+\centering\textbf{Job 1} &
+\centering\arraybackslash\textbf{Job 2}\\
+
+\centering Lint and Unit Tests &
+\centering\arraybackslash Docker Integration Tests\\
+
+\centering $\downarrow$ &
+\centering\arraybackslash $\downarrow$\\
+
+\centering Ruff &
+\centering\arraybackslash Environment configuration\\
+
+\centering $\downarrow$ &
+\centering\arraybackslash $\downarrow$\\
+
+\centering 21 non-integration tests &
+\centering\arraybackslash Docker startup\\
+
+&
+\centering\arraybackslash $\downarrow$\\
+
+&
+\centering\arraybackslash API readiness check\\
+
+&
+\centering\arraybackslash $\downarrow$\\
+
+&
+\centering\arraybackslash 2 integration tests\\
+\end{tabularx}
+
+\vspace{6pt}
+
+$\downarrow$\\[4pt]
+\textbf{CI Workflow Result}
+
+\vspace{5pt}
+\end{minipage}
+}
+\end{center}
+
+\subsection{Initial GitHub Account Restriction}
+
+The first hosted workflow execution was prevented
+from starting because of an account-level billing
+restriction.
+
+GitHub reported:
+
+\begin{quote}
+\textit{The job was not started because your account
+is locked due to a billing issue.}
+\end{quote}
+
+Neither CI job started during the affected execution.
+
+The restriction was therefore unrelated to application
+code, automated test failures or Docker configuration.
+
+Local automated tests and containerized integration
+were verified independently.
+
+\shot{33_github_actions_billing_block.png}
+{Historical GitHub account billing restriction preventing CI execution.}
+{fig:ci}
+
+\subsection{Resolution of the Billing Restriction}
+
+GitHub Support was contacted to investigate the
+account restriction.
+
+On 24 November 2026, GitHub Support confirmed that
+an expired coupon had triggered a billing-related
+account lock.
+
+The account was unlocked and its billing state
+was reset.
+
+Following the resolution, the GitHub Actions
+workflow was executed again.
+
+\subsection{First Successful Hosted CI Execution}
+
+Workflow run number 3 completed successfully on
+24 November 2026.
+
+The workflow was manually triggered on the main
+branch.
+
+The associated commit was \texttt{c450be8}.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{@{}Xll@{}}
+\toprule
+\textbf{CI Job} & \textbf{Duration} & \textbf{Result}\\
+\midrule
+Lint and Unit Tests & 37 seconds & Success\\
+Docker Integration Tests & 1 min 35 sec & Success\\
+\midrule
+Total workflow duration & 1 min 39 sec & Success\\
+\bottomrule
+\end{tabularx}
+\caption{First successful hosted CI workflow.}
+\end{table}
+
+The successful execution confirmed that the previous
+account-level restriction had been resolved.
+
+The workflow is available at:
+
+\begin{center}
+\url{https://github.com/neskrotna/sepl-ml-system/actions/runs/45367264475}
+\end{center}
+
+\optionalshot{34_github_actions_success.png}
+{First successful GitHub Actions workflow execution.}
+{fig:firstcisuccess}
+
+\optionalshot{35_ci_lint_unit_tests.png}
+{Successful linting and non-integration testing in GitHub Actions.}
+{fig:firstciunit}
+
+\optionalshot{36_ci_docker_integration_tests.png}
+{Successful Docker integration testing in GitHub Actions.}
+{fig:firstciintegration}
+
+The workflow overview also displayed non-blocking
+Node.js deprecation annotations associated with
+GitHub Actions dependencies.
+
+Both jobs completed successfully despite these
+annotations.
+
+\subsection{CI Environment Configuration Update}
+
+After introducing the local environment file, the
+Docker integration job was extended to generate its
+own runtime configuration.
+
+The following step was added immediately after
+repository checkout:
+
+\begin{lstlisting}
+- name: Create environment configuration
+  run: cp .env.example .env
+\end{lstlisting}
+
+This is required because the actual \codepath{.env}
+file is excluded from version control.
+
+The GitHub-hosted runner therefore creates its own
+configuration from the committed template before
+starting Docker Compose.
+
+The isolated lint and unit testing job does not
+require this additional step.
+
+\subsection{API Readiness Verification}
+
+The integration workflow waits for the API to
+become available before executing integration tests.
+
+The readiness check repeatedly requests:
+
+\begin{lstlisting}
+http://localhost:8000/health
+\end{lstlisting}
+
+The workflow allows up to 30 attempts with a
+two-second delay between unsuccessful attempts.
+
+If the API does not become ready, Docker logs
+are displayed and the job fails.
+
+This prevents integration tests from starting
+before the application is available.
+
+\subsection{Successful Updated CI Execution}
+
+The updated infrastructure and CI workflow were
+pushed to the main branch on 24 November 2026.
+
+Workflow run number 5 was automatically triggered
+by the push.
+
+Both jobs completed successfully.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Property} & \textbf{Observed Value}\\
+\midrule
+Workflow & White Wine Quality CI\\
+Run number & 5\\
+Branch & main\\
+Commit & a102b16\\
+Trigger & Push\\
+Overall status & Success\\
+Successful jobs & 2/2\\
+Total duration & 1 minute 40 seconds\\
+\bottomrule
+\end{tabularx}
+\caption{Updated GitHub Actions workflow execution.}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{@{}Xll@{}}
+\toprule
+\textbf{CI Job} & \textbf{Duration} & \textbf{Result}\\
+\midrule
+Lint and Unit Tests & 29 seconds & Success\\
+Docker Integration Tests & 1 min 37 sec & Success\\
+\bottomrule
+\end{tabularx}
+\caption{Successful execution of both updated CI jobs.}
+\end{table}
+
+\shot{43_github_actions_updated_configuration.png}
+{Successful automatically triggered CI workflow after infrastructure changes.}
+{fig:updatedci}
+
+\optionalshot{44_ci_updated_unit_tests.png}
+{Updated CI workflow linting and non-integration test results.}
+{fig:updatedciunit}
+
+\optionalshot{45_ci_updated_integration_tests.png}
+{Updated CI workflow Docker integration test results.}
+{fig:updatedciintegration}
+
+\subsection{Continuous Integration Verification}
+
+The successful automatically triggered workflow
+demonstrates that the updated infrastructure works
+on GitHub-hosted runners.
+
+The workflow verifies application quality through
+static analysis, isolated tests and containerized
+integration testing.
+
+The CI jobs run independently and their execution
+durations therefore do not need to add up to the
+total workflow duration.
+
+The implementation provides continuous integration.
+Automated deployment to a production environment
+has not been implemented.
+
+% =========================================================
+% 12. LOGGING AND MONITORING
+% =========================================================
+
+\section{Application Logging and Monitoring}
+
+\subsection{Logging Implementation}
+
+The API and background worker use Python's built-in
+logging module \cite{logging}.
+
+Logging supports observation of application behaviour,
+prediction processing and error diagnosis.
+
+The application log format includes:
+
+\begin{itemize}
+    \item Timestamp.
+    \item Logging level.
+    \item Descriptive event message.
+\end{itemize}
+
+An example application log entry is:
+
+\begin{lstlisting}
+2026-11-24 10:14:31,793 | INFO | Starting processing for task ...
+\end{lstlisting}
+
+\subsection{API Logging}
+
+The API records important application events,
+including:
+
+\begin{itemize}
+    \item Application startup.
+    \item Redis connection establishment.
+    \item Prediction task submission.
+    \item Prediction status retrieval.
+    \item HTTP requests and response status codes.
+    \item Application errors.
+\end{itemize}
+
+API logs were inspected using:
+
+\begin{lstlisting}
+docker compose logs api --tail 30
+\end{lstlisting}
+
+The observed logs confirmed successful application
+startup, Redis connectivity, health-check requests,
+prediction submission and result retrieval.
+
+\shot{41b_api_logging.png}
+{API logs showing startup, health checks, prediction submission and result retrieval.}
+{fig:apilogging}
+
+\subsection{Worker Logging}
+
+The background worker records important processing
+events, including:
+
+\begin{itemize}
+    \item Worker startup.
+    \item Successful model loading.
+    \item Redis connection establishment.
+    \item Waiting for prediction jobs.
+    \item Task reception.
+    \item Processing start.
+    \item Completed predictions.
+    \item Prediction confidence.
+    \item Inference execution time.
+\end{itemize}
+
+Worker logs were inspected using:
+
+\begin{lstlisting}
+docker compose logs worker --tail 30
+\end{lstlisting}
+
+\shot{41a_worker_logging.png}
+{Worker logs showing model loading, task processing and inference execution time.}
+{fig:workerlogging}
+
+\subsection{Task Traceability}
+
+The API and worker logs contain the same unique task
+identifier for an individual prediction.
+
+During verification, the following task identifier
+appeared in both service logs:
+
+\begin{lstlisting}
+c6ef8af3-80a3-4dd3-ba30-eaafafc019ae
+\end{lstlisting}
+
+The API logged the creation of the prediction job.
+
+The worker subsequently logged reception, processing
+and completion of the same task.
+
+The API then logged retrieval of the task result.
+
+This supports tracing a prediction across the
+distributed application services.
+
+\subsection{Health Monitoring}
+
+The API exposes the following endpoint:
+
+\begin{lstlisting}
+GET /health
+\end{lstlisting}
+
+The endpoint checks Redis connectivity and reports
+the corresponding application health state.
+
+Redis availability is additionally monitored using
+the Docker Compose health check.
+
+These mechanisms provide basic service availability
+monitoring.
+
+The API health endpoint does not independently verify
+all worker functionality or model prediction quality.
+
+\subsection{Live Application Monitoring}
+
+Docker Compose provides access to application logs
+without requiring direct access to the container
+filesystem.
+
+Combined logs are available using:
+
+\begin{lstlisting}
+docker compose logs
+\end{lstlisting}
+
+Continuous monitoring of the API and worker is
+available using:
+
+\begin{lstlisting}
+docker compose logs -f api worker
+\end{lstlisting}
+
+This supports runtime troubleshooting during
+application development and testing.
+
+\subsection{Observed Inference Execution Time}
+
+The worker logs record the execution time associated
+with prediction processing.
+
+During local verification on 24 November 2026,
+one completed prediction produced the following
+observed values:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Metric} & \textbf{Observed Value}\\
+\midrule
+Prediction & \texttt{good\_quality}\\
+Confidence & 0.7500\\
+Inference execution time & 0.3005 seconds\\
+Task status & Completed\\
+\bottomrule
+\end{tabularx}
+\caption{Observed prediction processing measurement.}
+\end{table}
+
+The recorded inference time corresponds to
+approximately 300.5 milliseconds.
+
+This measurement demonstrates successful runtime
+performance logging.
+
+It represents one observed prediction and should
+not be interpreted as an average latency, a
+throughput benchmark or a complete end-to-end
+response time measurement.
+
+\subsection{Monitoring Limitations}
+
+The implemented monitoring approach provides
+application logs, task traceability, health checks
+and inference execution-time measurements.
+
+Dedicated metrics aggregation, dashboards,
+centralized log storage and automated alerting
+have not been implemented.
+
+These mechanisms represent potential extensions
+for a production-oriented deployment.
+
+% =========================================================
+% 13. REPRODUCIBILITY AND DOCUMENTATION
+% =========================================================
+
+\section{Reproducibility and Documentation}
+
+\subsection{Application Startup}
+
+The repository contains the trained model artifact,
+dataset, application source code, dependency
+definitions and infrastructure configuration.
+
+The recommended application startup procedure
+requires Git and Docker Compose.
+
+\begin{lstlisting}
+git clone https://github.com/neskrotna/sepl-ml-system.git
+
+cd sepl-ml-system
+
+Copy-Item .env.example .env
+
+docker compose up -d --build
+
+docker compose ps
+\end{lstlisting}
+
+The application is accessible through:
+
+\begin{center}
+\url{http://localhost:8000/docs}
+\end{center}
+
+Retraining the model is not required for normal
+application inference.
+
+\subsection{Application Shutdown}
+
+The Docker application is stopped using:
+
+\begin{lstlisting}
+docker compose down
+\end{lstlisting}
+
+The named Redis volume remains available after
+normal shutdown.
+
+\subsection{README Documentation}
+
+The repository includes a comprehensive
+\codepath{README.md} describing:
+
+\begin{itemize}
+    \item Project overview and architecture.
+    \item Dataset and model results.
+    \item Required development tools.
+    \item Environment configuration.
+    \item Docker startup instructions.
+    \item Model bind mount configuration.
+    \item API prediction examples.
+    \item Logging and monitoring commands.
+    \item Local Python environment setup.
+    \item Model training instructions.
+    \item Automated testing commands.
+    \item Ruff static code analysis.
+    \item GitHub Actions workflow.
+    \item Troubleshooting procedures.
+    \item Project implementation status.
+\end{itemize}
+
+The README supports reproduction of the
+implemented application on another development
+computer.
+
+\subsection{Project Structure}
+
+\begin{lstlisting}
+sepl-ml-system/
+|-- .github/
+|   `-- workflows/
+|       `-- ci.yml
+|-- api/
+|   |-- main.py
+|   `-- schemas.py
+|-- data/
+|   `-- winequality-white.csv
+|-- docs/
+|   |-- report/
+|   `-- screenshots/
+|-- ml_model/
+|   |-- explore_data.py
+|   |-- model.py
+|   |-- model.pkl
+|   |-- test_local_prediction.py
+|   `-- train.py
+|-- tests/
+|   |-- test_api.py
+|   |-- test_integration.py
+|   `-- test_model.py
+|-- worker/
+|   `-- worker.py
+|-- .dockerignore
+|-- .env.example
+|-- .gitignore
+|-- Dockerfile
+|-- compose.yaml
+|-- pytest.ini
+|-- requirements.txt
+`-- README.md
+\end{lstlisting}
+
+The directory structure separates application
+components, machine learning development, tests,
+infrastructure and documentation.
+
+% =========================================================
+% 14. HPC SIMULATION WITH SLURM
+% =========================================================
+
+\section{HPC Simulation with Slurm}
+
+\textbf{Implementation status: Outstanding.}
+
+The HPC simulation represents a subsequent
+assessment component.
+
+The existing application provides containerized
+asynchronous inference using Redis and a
+background worker.
+
+This architecture is distinct from an HPC
+batch scheduling environment.
+
+The Slurm implementation, execution procedure
+and experimental results will be documented
+after the corresponding assessment requirements
+have been implemented and verified.
+
+No Slurm execution or HPC benchmark results
+are claimed at the current project stage.
+
+% =========================================================
+% 15. PERFORMANCE REFLECTION
+% =========================================================
+
+\section{Performance Reflection}
+
+\textbf{Implementation status: Preliminary observations.}
+
+\subsection{Current Performance Observations}
+
+The project currently provides the following
+verified performance-related measurements.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{@{}Xl@{}}
+\toprule
+\textbf{Measurement} & \textbf{Observed Value}\\
+\midrule
+Model test accuracy & 75.16\%\\
+Macro-averaged F1-score & Approximately 0.72\\
+Serialized model size & Approximately 7.47 MB\\
+Single observed inference time & 0.3005 seconds\\
+Isolated model-loading test execution & 8.60 seconds\\
+Latest CI lint and unit testing job & 29 seconds\\
+Latest CI integration testing job & 1 min 37 sec\\
+Latest complete CI workflow & 1 min 40 sec\\
+\bottomrule
+\end{tabularx}
+\caption{Currently available performance-related measurements.}
+\end{table}
+
+The model-loading test duration includes test
+execution overhead and is not an isolated
+measurement of model deserialization time.
+
+Similarly, GitHub Actions execution durations
+include infrastructure preparation, dependency
+installation and testing. They do not represent
+model inference latency.
+
+\subsection{Asynchronous Architecture Reflection}
+
+The asynchronous design separates request
+acceptance from prediction execution.
+
+This supports independent management of the
+API and background worker.
+
+However, Redis communication, job serialization,
+queue management and result retrieval introduce
+additional processing overhead.
+
+For a relatively lightweight Random Forest model,
+direct synchronous inference might provide lower
+latency for individual requests.
+
+The selected architecture primarily demonstrates
+asynchronous processing and separation of
+application responsibilities.
+
+A controlled comparison between synchronous and
+asynchronous inference has not yet been performed.
+
+\subsection{Pending Performance Evaluation}
+
+The final performance reflection will be extended
+after completion of the HPC simulation and the
+remaining assessment requirements.
+
+The currently available single-prediction
+measurement is insufficient for conclusions
+about average latency, throughput, scalability
+or HPC performance.
+
+% =========================================================
+% 16. DISCUSSION AND LIMITATIONS
+% =========================================================
+
+\section{Discussion and Limitations}
+
+\subsection{Implementation Outcomes}
+
+The project demonstrates an end-to-end machine
+learning engineering workflow.
+
+The trained Random Forest model achieved 75.16\%
+accuracy on the held-out test dataset.
+
+The model was successfully integrated into a
+validated REST API and asynchronous background
+processing architecture.
+
+Docker Compose provides a reproducible
+multi-service environment.
+
+The updated infrastructure supports externalized
+configuration, read-only model access, persistent
+Redis storage and service startup coordination.
+
+Automated testing and static analysis were
+successfully executed locally and through
+GitHub Actions.
+
+The application also provides basic runtime
+observability through logging, health checks,
+task identifiers and inference-time measurements.
+
+\subsection{Model Limitations}
+
+The model predicts binary quality categories
+rather than the original numerical wine quality
+score.
+
+Evaluation was performed using a single
+training and test split.
+
+Generalization to wine samples collected from
+different data sources or production conditions
+has not been independently evaluated.
+
+The reported confidence values have not been
+evaluated through a dedicated probability
+calibration experiment.
+
+\subsection{Infrastructure Limitations}
+
+Redis provides a lightweight queue and result
+store suitable for the selected assessment use
+case.
+
+Advanced retry policies, dead-letter queues
+and stronger delivery guarantees have not been
+implemented.
+
+The application uses a single configured
+background worker.
+
+Horizontal scaling and concurrent workload
+performance have not been systematically
+evaluated.
+
+\subsection{Monitoring Limitations}
+
+The application implements basic logging and
+health monitoring.
+
+Dedicated monitoring dashboards, centralized
+log aggregation, automated alerting and model
+drift detection remain potential future
+extensions.
+
+The observed inference-time measurement
+represents one prediction rather than a
+statistically evaluated workload.
+
+\subsection{Environment Reproducibility}
+
+The Docker and CI environments use Python 3.12,
+while the recreated local development environment
+uses Python 3.13.14.
+
+All local tests passed in the recreated
+environment.
+
+Nevertheless, using consistent Python and
+dependency versions across training, local
+development, Docker and CI would further
+reduce compatibility risks.
+
+Serialized scikit-learn models should be loaded
+using compatible library versions.
+
+\subsection{Deployment and Security Limitations}
+
+The API is exposed locally through the
+loopback interface.
+
+Authentication, authorization, production TLS
+configuration and automated production
+deployment have not been implemented.
+
+The GitHub Actions workflow provides continuous
+integration rather than a complete production
+continuous deployment pipeline.
+
+\subsection{Future Work}
+
+Potential extensions include:
+
+\begin{itemize}
+    \item Cross-validation and model comparison.
+    \item Hyperparameter optimization.
+    \item Probability calibration.
+    \item Model versioning.
+    \item Improved dependency version management.
+    \item Advanced Redis retry mechanisms.
+    \item Multiple inference workers.
+    \item Centralized metrics and log collection.
+    \item Automated alerting.
+    \item Authentication and authorization.
+    \item Automated production deployment.
+    \item Controlled latency and throughput benchmarking.
+\end{itemize}
+
+The outstanding Slurm simulation and final
+performance reflection will be addressed as
+part of the remaining assessment work.
+
+% =========================================================
+% 17. ASSESSMENT IMPLEMENTATION STATUS
+% =========================================================
+
+\section{Assessment Implementation Status}
+
+The following table summarizes the current
+implementation and verification status.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}cXX@{}}
+\toprule
+\textbf{Part} &
+\textbf{Assessment Component} &
+\textbf{Current Status}\\
+\midrule
+
+1 &
+ML Model Development &
+Implemented and verified\\
+
+2 &
+FastAPI Inference API &
+Implemented and verified\\
+
+3 &
+Background Worker &
+Implemented and verified\\
+
+4 &
+Containerization &
+Verified locally and in CI\\
+
+5 &
+Testing and Quality Assurance &
+23 local tests passed; both CI jobs successful\\
+
+6 &
+Logging and Monitoring &
+Basic logging, health checks and task traceability verified\\
+
+7 &
+HPC Simulation with Slurm &
+Outstanding\\
+
+8 &
+Performance Reflection &
+Preliminary observations documented\\
+
+9 &
+Final Deliverables &
+Documentation in progress\\
+
+\bottomrule
+\end{tabularx}
+\caption{Current assessment implementation status.}
+\end{table}
+
+The status reflects the implementation evidence
+available on 24 November 2026.
+
+The final assessment completion status remains
+subject to the outstanding implementation work
+and verification against the complete assessment
+requirements.
+
+% =========================================================
+% 18. CONCLUSION
+% =========================================================
+
+\section{Conclusion}
+
+A functioning white wine quality prediction system
+was implemented using Random Forest, FastAPI,
+Pydantic, Redis, a Python background worker and
+Docker Compose.
+
+The machine learning model achieved a test
+accuracy of 75.16\% and was successfully
+serialized for reusable application inference.
+
+The REST API validates incoming requests and
+submits asynchronous prediction jobs to Redis.
+The background worker processes queued jobs and
+stores completed predictions for retrieval.
+
+The containerized infrastructure was extended
+with environment-based configuration, read-only
+model bind mounts, persistent Redis storage,
+service networking and health checks.
+
+Runtime verification confirmed successful
+container startup, Redis connectivity, model
+access and end-to-end prediction processing.
+
+All 23 automated tests passed locally, and
+Ruff reported no remaining lint issues.
+
+The GitHub account restriction that initially
+prevented hosted CI execution was resolved.
+
+Both the manually triggered workflow and the
+subsequent automatically triggered workflow
+completed successfully on GitHub-hosted runners.
+
+The latest verified CI workflow completed in
+1 minute and 40 seconds, with both jobs passing.
+
+Application logging provides visibility into
+startup events, task processing, prediction
+results and inference execution time.
+
+The current implementation demonstrates the
+integration of machine learning development
+with reproducible infrastructure, asynchronous
+application architecture, automated testing,
+continuous integration and basic runtime
+monitoring.
+
+The remaining assessment work consists of
+the HPC simulation with Slurm, the final
+performance reflection and completion of the
+submission documentation.
+
+% =========================================================
+% REFERENCES
+% =========================================================
+
+\clearpage
+
+\addcontentsline{toc}{section}{References}
+
+\begin{thebibliography}{12}
+
+\bibitem{wine}
+Cortez, P., Cerdeira, A., Almeida, F.,
+Matos, T. and Reis, J. (2009).
+Modeling wine preferences by data mining
+from physicochemical properties.
+\emph{Decision Support Systems},
+47(4), 547--553.
+
+\bibitem{uci}
+UCI Machine Learning Repository.
+Wine Quality Dataset.
+\url{https://archive.ics.uci.edu/dataset/186/wine+quality}
+
+\bibitem{sklearn}
+scikit-learn Documentation.
+\url{https://scikit-learn.org/stable/}
+
+\bibitem{fastapi}
+FastAPI Documentation.
+\url{https://fastapi.tiangolo.com/}
+
+\bibitem{pydantic}
+Pydantic Documentation.
+\url{https://docs.pydantic.dev/}
+
+\bibitem{redis}
+Redis Documentation.
+\url{https://redis.io/docs/}
+
+\bibitem{docker}
+Docker Documentation.
+\url{https://docs.docker.com/}
+
+\bibitem{compose}
+Docker Compose Documentation.
+\url{https://docs.docker.com/compose/}
+
+\bibitem{pytest}
+pytest Documentation.
+\url{https://docs.pytest.org/}
+
+\bibitem{ruff}
+Ruff Documentation.
+\url{https://docs.astral.sh/ruff/}
+
+\bibitem{actions}
+GitHub Actions Documentation.
+\url{https://docs.github.com/en/actions}
+
+\bibitem{logging}
+Python Logging Documentation.
+\url{https://docs.python.org/3/library/logging.html}
+
+\end{thebibliography}
+
+\end{document}
